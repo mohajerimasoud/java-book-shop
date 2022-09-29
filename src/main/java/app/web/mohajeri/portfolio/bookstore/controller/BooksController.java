@@ -25,7 +25,7 @@ public class BooksController {
 
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public ResponseEntity<List<Book>> getAllBooks() {
         List<Book> allBooks = bookRepository.findAll();
         return ResponseEntity.status(200).body(allBooks);

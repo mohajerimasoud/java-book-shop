@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -24,4 +25,8 @@ public class Book {
     @NotBlank
     @Size(max = 30, message = "شابک کتاب اجباری است")
     private String isbn;
+
+    @NotBlank
+    @Min(value = 10_000, message = "مقدار وارد شده برای قیمت کمتر از حداقل مجاز است")
+    private Long price;
 }
