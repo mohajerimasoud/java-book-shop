@@ -2,7 +2,6 @@ package app.web.mohajeri.portfolio.bookstore.controller;
 
 
 import app.web.mohajeri.portfolio.bookstore.model.Book;
-import app.web.mohajeri.portfolio.bookstore.payload.response.GenericResponse;
 import app.web.mohajeri.portfolio.bookstore.repository.BookRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
