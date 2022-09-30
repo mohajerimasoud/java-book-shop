@@ -1,12 +1,15 @@
 package app.web.mohajeri.portfolio.bookstore.model;
 
 import lombok.Data;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.*;
 import java.util.Date;
+import java.util.List;
 
 @Document(collection = "authors")
 @Data
@@ -27,5 +30,7 @@ public class Author {
     @Min(value = 1 , message = "مقدار وارد شده برای کدملی معتبر نمی باشد")
     private Long nationalCode;
 
-//    books
+    @NotNull(payload = {})
+    @DBRef()
+    private List<Book> books;
 }

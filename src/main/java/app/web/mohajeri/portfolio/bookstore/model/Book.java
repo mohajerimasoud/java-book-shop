@@ -18,9 +18,9 @@ public class Book {
     @Size(max = 30, message = "نام کتاب باید کمتر از 30 کارکتر باشد")
     private String name;
 
-    @NotBlank
-    @Size(max = 30, message = "نام نویسنده باید کمتر از 30 کارکتر باشد")
-    private String author;
+//    @NotBlank
+//    @Size(max = 30, message = "نام نویسنده باید کمتر از 30 کارکتر باشد")
+//    private String author;
 
     @NotBlank
     @Size(max = 30, message = "شابک کتاب اجباری است")

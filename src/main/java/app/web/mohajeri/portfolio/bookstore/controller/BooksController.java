@@ -1,6 +1,5 @@
 package app.web.mohajeri.portfolio.bookstore.controller;
 
-
 import app.web.mohajeri.portfolio.bookstore.model.Book;
 import app.web.mohajeri.portfolio.bookstore.repository.BookRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -11,13 +10,14 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/book")
 public class BooksController {
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
 
     @Autowired
     public BooksController(BookRepository bookRepository) {
@@ -48,20 +48,15 @@ public class BooksController {
     public ResponseEntity<String> createBook(@Valid @RequestBody Book book, Errors errors) throws Exception {
         try {
             if (errors.hasErrors()) {
-                return ResponseEntity.status(400).body(errors.getFieldError().toString());
+                return ResponseEntity.status(400).body(Objects.requireNonNull(errors.getFieldError()).toString());
             }
-            var findWithIsbn = bookRepository.findBookByIsbn(book.getIsbn());
-            log.info("=== findWithIsbn" + findWithIsbn.toString());
+
             if (bookRepository.findBookByIsbn(book.getIsbn()).isPresent()) {
                 return ResponseEntity.status(400).body("Book with ISBN : " + book.getIsbn() + "already exist .");
             }
 
             var result = bookRepository.save(book);
-            if (result != null) {
-                return ResponseEntity.status(200).body(result.toString());
-            } else {
-                return ResponseEntity.status(500).body("Book not saved : DB issue");
-            }
+            return ResponseEntity.status(200).body(result.toString());
 
         } catch (Exception e) {
             return ResponseEntity.status(200).body("Book not saved : Server issue" + e.toString());
@@ -73,13 +68,13 @@ public class BooksController {
     public ResponseEntity<String> createBook(@Valid @RequestBody Book book, @PathVariable String id, Errors errors) throws Exception {
         try {
             if (errors.hasErrors()) {
-                return ResponseEntity.status(400).body(errors.getFieldError().toString());
+                return ResponseEntity.status(400).body(Objects.requireNonNull(errors.getFieldError()).toString());
             }
             var result = bookRepository.findById(id);
-            if (!result.isPresent()) {
+            if (result.isEmpty()) {
                 return ResponseEntity.status(200).body("Book with this id doesn't exist ");
             } else {
-                result.get().setAuthor(book.getAuthor());
+//                result.get().setAuthor(book.getAuthor());
                 result.get().setName(book.getName());
                 result.get().setIsbn(book.getIsbn());
                 bookRepository.save(result.get());
@@ -87,7 +82,7 @@ public class BooksController {
             }
 
         } catch (Exception e) {
-            return ResponseEntity.status(200).body("Book not saved : Server issue" + e.toString());
+            return ResponseEntity.status(200).body("Book not saved : Server issue" + e);
         }
     }
 
