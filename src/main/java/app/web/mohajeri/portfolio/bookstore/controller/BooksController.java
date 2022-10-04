@@ -4,6 +4,10 @@ import app.web.mohajeri.portfolio.bookstore.model.Book;
 import app.web.mohajeri.portfolio.bookstore.repository.BookRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +22,12 @@ import java.util.Optional;
 @RequestMapping("/api/book")
 public class BooksController {
     private final BookRepository bookRepository;
+    private final MongoTemplate mongoTemplate;
 
     @Autowired
-    public BooksController(BookRepository bookRepository) {
+    public BooksController(BookRepository bookRepository, MongoTemplate mongoTemplate) {
         this.bookRepository = bookRepository;
+        this.mongoTemplate = mongoTemplate;
 
     }
 
@@ -43,6 +49,27 @@ public class BooksController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<String> getBookById(@PathVariable String id) {
+        log.info("=== id " + id);
+        try {
+            LookupOperation lookupOperation = LookupOperation.newLookup()
+                    .from("AUTHORS")
+                    .localField("_id")
+                    .foreignField("author")
+                    .as("author");
+
+            Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("_id").is(id)), lookupOperation);
+            List<Book> results = mongoTemplate.aggregate(aggregation, "Book", Book.class).getMappedResults();
+            log.info("=== Aggregation success " + results);
+            return ResponseEntity.status(200).body("Book found " + results);
+
+        } catch (Exception error) {
+            log.error("=== Aggregation error " + error);
+            return ResponseEntity.status(400).body("error " + error);
+        }
+    }
+
 
     @PostMapping("")
     public ResponseEntity<String> createBook(@Valid @RequestBody Book book, Errors errors) throws Exception {
@@ -52,7 +79,7 @@ public class BooksController {
             }
 
             if (bookRepository.findBookByIsbn(book.getIsbn()).isPresent()) {
-                return ResponseEntity.status(400).body("Book with ISBN : " + book.getIsbn() + "already exist .");
+                return ResponseEntity.status(400).body("Book with ISBN : " + book.getIsbn() + " already exist .");
             }
 
             var result = bookRepository.save(book);
@@ -65,7 +92,7 @@ public class BooksController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> createBook(@Valid @RequestBody Book book, @PathVariable String id, Errors errors) throws Exception {
+    public ResponseEntity<String> editBook(@Valid @RequestBody Book book, @PathVariable String id, Errors errors) throws Exception {
         try {
             if (errors.hasErrors()) {
                 return ResponseEntity.status(400).body(Objects.requireNonNull(errors.getFieldError()).toString());

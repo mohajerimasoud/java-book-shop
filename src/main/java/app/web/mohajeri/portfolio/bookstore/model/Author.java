@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +32,5 @@ public class Author {
     private Long nationalCode;
 
     @NotNull(payload = {})
-    @DBRef()
-    private List<Book> books;
+    private List<String> books = new ArrayList<>();
 }
