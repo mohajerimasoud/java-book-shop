@@ -69,5 +69,22 @@ public class JwtService {
         }
     }
 
+    public String extractToken(String jwt) {
+        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+        try {
+//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt)
+//            var claims = Jwts.claims().get("userId");
+            var claims = Jwts.parserBuilder()  // (1)
+                    .setSigningKey(key)         // (2)
+                    .build()                    // (3)
+                    .parseClaimsJws(jwt);
+            log.info("=== token claims " + claims);
+            return claims.toString();
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+
+
 
 }

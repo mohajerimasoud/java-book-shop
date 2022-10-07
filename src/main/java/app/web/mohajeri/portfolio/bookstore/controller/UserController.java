@@ -51,6 +51,40 @@ public class UserController {
         }
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<TokenDto> userLogin(@Valid @RequestBody User user, Errors error) {
+        try {
+            if (error.hasErrors()) {
+                throw  new Error("errors : " + error);
+            }
+            var foundUser = userRepository.findUserByUsername(user.getUsername());
+            if (foundUser == null) {
+                throw  new Error("username not found");
+            }
+
+            var jwt = jwtService.generateTokenFromUserId(foundUser.getId());
+
+            return ResponseEntity.status(200).body(jwt);
+        } catch (Exception e) {
+            log.error("Error in controller " + e);
+            throw new Error(e);
+        }
+    }
+
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<TokenDto> userLogin(@RequestParam String refreshToken) {
+        try {
+            var result = jwtService.extractToken(refreshToken);
+            var jwt = jwtService.generateTokenFromUserId(result);
+
+            return ResponseEntity.status(200).body(jwt);
+        } catch (Exception e) {
+            log.error("Error in controller " + e);
+            throw new Error(e);
+        }
+    }
+
 
     @PostMapping("/validate")
     public ResponseEntity<String> validateToken( @RequestParam String token) {
