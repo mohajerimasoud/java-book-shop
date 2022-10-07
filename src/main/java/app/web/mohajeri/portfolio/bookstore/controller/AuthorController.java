@@ -51,40 +51,40 @@ public class AuthorController {
     }
 
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<Object> assignBookToAuthor(@PathVariable(name = "id") String authorID, @RequestBody String bookId) {
-        try {
-            Optional<Author> authorResult = authorRepository.findById(authorID);
-            if (authorResult.isEmpty()) {
-                return ResponseEntity.status(404).body("Author not found");
-            }
-
-            log.info("Book Id : " + bookId);
-            Optional<Book> bookResult = bookRepository.findById("6335a6155c790258bf62532b");
-            if (bookResult.isEmpty()) {
-                return ResponseEntity.status(404).body("Book not found");
-            }
-            if (authorResult.get().getBooks() != null) {
-                List<Book> currentBooks = authorResult.get().getBooks();
-                currentBooks.add(bookResult.get());
-                authorResult.get().setBooks(currentBooks);
-            } else {
-                List<Book> currentBooks = new ArrayList<>();
-                currentBooks.add(bookResult.get());
-                authorResult.get().setBooks(currentBooks);
-
-            }
-
-//            authorResult.get().setBooks(currentBooks);
-//            authorResult.get().setBooks();
-            authorRepository.save(authorResult.get());
-            return ResponseEntity.status(200).body(authorResult.get());
-        } catch (Exception e) {
-            log.error("=== error in adding book to author " + e);
-            return ResponseEntity.status(500).body("Some error occurred " + e);
-
-        }
-    }
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<Object> assignBookToAuthor(@PathVariable(name = "id") String authorID, @RequestBody String bookId) {
+//        try {
+//            Optional<Author> authorResult = authorRepository.findById(authorID);
+//            if (authorResult.isEmpty()) {
+//                return ResponseEntity.status(404).body("Author not found");
+//            }
+//
+//            log.info("Book Id : " + bookId);
+//            Optional<Book> bookResult = bookRepository.findById("6335a6155c790258bf62532b");
+//            if (bookResult.isEmpty()) {
+//                return ResponseEntity.status(404).body("Book not found");
+//            }
+//            if (authorResult.get().getBooks() != null) {
+//                List<Book> currentBooks = authorResult.get().getBooks();
+//                currentBooks.add(bookResult.get());
+//                authorResult.get().setBooks(currentBooks);
+//            } else {
+//                List<Book> currentBooks = new ArrayList<>();
+//                currentBooks.add(bookResult.get());
+//                authorResult.get().setBooks(currentBooks);
+//
+//            }
+//
+////            authorResult.get().setBooks(currentBooks);
+////            authorResult.get().setBooks();
+//            authorRepository.save(authorResult.get());
+//            return ResponseEntity.status(200).body(authorResult.get());
+//        } catch (Exception e) {
+//            log.error("=== error in adding book to author " + e);
+//            return ResponseEntity.status(500).body("Some error occurred " + e);
+//
+//        }
+//    }
 
 
     @PostMapping("")
